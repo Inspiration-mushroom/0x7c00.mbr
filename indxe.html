@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教务处系统网站后台</title>
+    <link rel="icon" href="https://gitee.com/hcbug/picture1/raw/master/20260706124317969.webp" type="image/x-icon">
+    <style>
+        :root {
+            --bg: #f0f6fb;
+            --card-bg: #ffffff;
+            --primary: #5b9fd4;
+            --primary-light: #e8f2fa;
+            --primary-dark: #3d7db5;
+            --success: #4caf84;
+            --danger: #e0556a;
+            --text: #2c3e50;
+            --text-secondary: #6b7d8e;
+            --border: #dce6f0;
+            --shadow: 0 8px 32px rgba(91, 159, 212, 0.12);
+            --shadow-lg: 0 16px 48px rgba(44, 62, 80, 0.18);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(160deg, #eaf4fb 0%, #f0f6fb 30%, #dce9f5 60%, #e8f2fa 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -120px;
+            right: -120px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(91, 159, 212, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -100px;
+            left: -100px;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(91, 159, 212, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 36px 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all var(--transition);
+            position: relative;
+        }
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            border-color: #c8dae8;
+        }
+        .card-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 28px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 7px;
+            letter-spacing: 0.2px;
+        }
+        .card-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .card-option {
+            flex: 1;
+            min-width: 80px;
+            padding: 12px 16px;
+            text-align: center;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border);
+            cursor: pointer;
+            background: #fafcfd;
+            font-weight: 500;
+            color: var(--text);
+            transition: all var(--transition);
+            user-select: none;
+            font-size: 0.95rem;
+            position: relative;
+        }
+        .card-option:hover {
+            border-color: #b8cfe0;
+            background: #f5f9fc;
+        }
+        .card-option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 700;
+            box-shadow: 0 0 0 3px rgba(91, 159, 212, 0.15);
+            transform: translateY(-1px);
+        }
+        .card-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: -8px;
+            right: -6px;
+            background: var(--primary);
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all var(--transition);
+            background: #fafcfd;
+            color: var(--text);
+            font-family: inherit;
+        }
+        .input-field:focus {
+            border-color: #a0c4e0;
+            box-shadow: 0 0 0 3px rgba(91, 159, 212, 0.08);
+            background: #fff;
+        }
+        .input-field.valid {
+            border-color: var(--success) !important;
+            background: #f6fdf9 !important;
+            box-shadow: 0 0 0 3px rgba(76, 175, 132, 0.1) !important;
+        }
+        .input-field.invalid {
+            border-color: var(--danger) !important;
+            background: #fefafa !important;
+            box-shadow: 0 0 0 3px rgba(224, 85, 106, 0.08) !important;
+            animation: shake 0.4s ease;
+        }
+        @keyframes shake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-4px);
+            }
+            50% {
+                transform: translateX(4px);
+            }
+            75% {
+                transform: translateX(-3px);
+            }
+        }
+
+        .hint-text {
+            font-size: 0.78rem;
+            margin-top: 5px;
+            font-weight: 500;
+            min-height: 18px;
+            transition: all var(--transition);
+        }
+        .hint-text.red {
+            color: var(--danger);
+        }
+        .hint-text.green {
+            color: var(--success);
+        }
+        .hint-text.gray {
+            color: #999;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 13px 28px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition);
+            letter-spacing: 0.3px;
+            text-align: center;
+            font-family: inherit;
+            width: 100%;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(91, 159, 212, 0.3);
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 6px 20px rgba(61, 125, 181, 0.35);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+        .btn-gray {
+            background: #d5dde5;
+            color: #8899aa;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .btn-gray.active {
+            background: var(--primary);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(91, 159, 212, 0.3);
+        }
+        .btn-gray.active:hover {
+            background: var(--primary-dark);
+        }
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            border-radius: 18px;
+            width: auto;
+            background: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-sm:hover {
+            background: var(--primary-light);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 40, 55, 0.55);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            animation: fadeIn 0.25s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .modal-dialog {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 30px 26px;
+            width: 92%;
+            max-width: 440px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            animation: slideUp 0.3s ease;
+            max-height: 85vh;
+            overflow-y: auto;
+            transition: transform 0.15s ease;
+        }
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .modal-subtitle {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        .modal-divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 14px 0;
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 48px;
+            background: #e8eef4;
+            border-radius: 24px;
+            overflow: hidden;
+            user-select: none;
+            cursor: default;
+        }
+        .slider-track {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #c5ddf5, var(--primary));
+            border-radius: 24px;
+            transition: width 0.05s linear;
+            width: 0%;
+        }
+        .slider-thumb {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+            cursor: grab;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #8899aa;
+            transition: left 0.05s linear;
+            touch-action: none;
+        }
+        .slider-thumb:active {
+            cursor: grabbing;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+        }
+        .slider-thumb.done {
+            background: var(--success);
+            color: #fff;
+        }
+        .slider-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.85rem;
+            color: #8899aa;
+            pointer-events: none;
+            z-index: 1;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: opacity 0.3s;
+        }
+
+        .progress-bar-wrap {
+            width: 100%;
+            height: 10px;
+            background: #e8eef4;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #7cc4f0);
+            border-radius: 5px;
+            transition: width 0.3s linear;
+            width: 0%;
+        }
+
+        .color-swatch {
+            display: inline-block;
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: #FF6145;
+            border: 3px solid #ddd;
+            vertical-align: middle;
+            margin: 0 6px;
+            box-shadow: 0 2px 8px rgba(255, 97, 69, 0.25);
+        }
+
+        .clause-list {
+            font-size: 0.8rem;
+            color: #555;
+            line-height: 1.7;
+            padding-left: 18px;
+            margin: 8px 0 14px;
+            max-height: 180px;
+            overflow-y: auto;
+            background: #fafcfd;
+            border-radius: 8px;
+            padding: 12px 16px 12px 28px;
+            border: 1px solid #eee;
+        }
+        .clause-list li {
+            margin-bottom: 4px;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+            user-select: none;
+        }
+        .checkbox-row input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            padding: 14px 28px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            animation: toastIn 0.4s ease, toastOut 0.3s ease 2s forwards;
+            pointer-events: none;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.3px;
+        }
+        .toast.success {
+            background: #4caf84;
+            color: #fff;
+        }
+        @keyframes toastIn {
+            from {
+                transform: translateX(-50%) translateY(-40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            z-index: 3000;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-60px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(105vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .text-center {
+            text-align: center;
+        }
+        .mt-2 {
+            margin-top: 8px;
+        }
+        .mt-3 {
+            margin-top: 14px;
+        }
+        .mb-2 {
+            margin-bottom: 8px;
+        }
+        .bold {
+            font-weight: 700;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 24px 16px;
+            }
+            .modal-dialog {
+                padding: 22px 16px;
+            }
+            .card-option {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+            .card-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container" id="mainContainer">
+        <!-- 注册卡片 -->
+        <div class="card" id="registerCard">
+            <div class="card-title">创建账号</div>
+            <div class="card-subtitle">填写以下信息完成注册</div>
+
+            <div class="form-group">
+                <label class="form-label">性别</label>
+                <div class="card-row" id="genderRow">
+                    <div class="card-option" data-value="男" onclick="selectGender(this)">男</div>
+                    <div class="card-option" data-value="女" onclick="selectGender(this)">女</div>
+                    <div class="card-option" data-value="其他" onclick="selectGender(this)">其他</div>
+                    <div class="card-option" data-value="沃尔玛购物袋" onclick="selectGender(this)">沃尔玛购物袋</div>
+                    <div class="card-option" data-value="阿帕奇武装直升机" onclick="selectGender(this)">阿帕奇武装直升机</div>
+                    <div class="card-option" data-value="攻击型直升机" onclick="selectGender(this)">攻击型直升机</div>
+                    <div class="card-option" data-value="烤箱" onclick="selectGender(this)">烤箱</div>
+                    <div class="card-option" data-value="螺丝刀" onclick="selectGender(this)">螺丝刀</div>
+                    <div class="card-option" data-value="芝士汉堡" onclick="selectGender(this)">芝士汉堡</div>
+                    <div class="card-option" data-value="核反应堆" onclick="selectGender(this)">核反应堆</div>
+                    <div class="card-option" data-value="哥斯拉" onclick="selectGender(this)">哥斯拉</div>
+                    <div class="card-option" data-value="瑞士军刀" onclick="selectGender(this)">瑞士军刀</div>
+                    <div class="card-option" data-value="霸王龙" onclick="selectGender(this)">霸王龙</div>
+                    <div class="card-option" data-value="路由器" onclick="selectGender(this)">路由器</div>
+                    <div class="card-option" data-value="海绵宝宝" onclick="selectGender(this)">干海绵</div>
+                    <div class="card-option" data-value="黑洞" onclick="selectGender(this)">黑洞</div>
+                </div>
+                <div class="hint-text red" id="genderHint"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">用户名</label>
+                <input type="text" class="input-field" id="usernameInput" placeholder="5-20位字符" maxlength="25" oninput="validateUsername()">
+                <div class="hint-text" id="usernameHint"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">密码</label>
+                <input type="password" class="input-field" id="passwordInput" placeholder="请输入密码" oninput="validatePassword()">
+                <div class="hint-text" id="passwordHint"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">手机号</label>
+                <input type="tel" class="input-field" id="phoneInput" placeholder="请输入11位手机号" maxlength="11" oninput="validatePhone()">
+                <div class="hint-text" id="phoneHint"></div>
+            </div>
+
+            <button class="btn btn-primary" id="registerBtn" onclick="startRegistration()">注册</button>
+        </div>
+
+        <!-- 登录卡片（初始隐藏） -->
+        <div class="card" id="loginCard" style="display:none;">
+            <div class="card-title">登录账号</div>
+            <div class="card-subtitle">请输入您的账号信息</div>
+            <div class="form-group">
+                <label class="form-label">用户名</label>
+                <input type="text" class="input-field" id="loginUsername" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label class="form-label">密码</label>
+                <input type="password" class="input-field" id="loginPassword" placeholder="请输入密码">
+                <div class="hint-text red" id="loginHint"></div>
+            </div>
+            <button class="btn btn-primary" onclick="handleLogin()">登录</button>
+    </div>
+
+    <!-- Modal覆盖层 -->
+    <div class="modal-overlay" id="modalOverlay" style="display:none;">
+        <div class="modal-dialog" id="modalDialog">
+            <div class="modal-title" id="modalTitle"></div>
+            <div class="modal-subtitle" id="modalSubtitle"></div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============ 全局状态 ============
+        const state = {
+            gender: null,
+            username: '',
+            password: '',
+            phone: '',
+            stepIndex: 0,
+            fa2Key: '',
+            memoryNumber: '',
+            memoryTimeout: null,
+            voiceInputStart: 0,
+            sliderDone: false,
+            modalOffsetX: 0,
+        };
+
+        // 步骤显示编号映射
+        const stepLabels = [
+            '一', '二', '三', '四', '五', '六', '七', '八', '九', '十',
+            '十一', '十二', '十三', '十四', '十五', '十六', '十六', '十七', '十八', '十九',
+            '二十', '二十一', '二十二', '二十三', '二十四', '二十五', '二十六'
+        ];
+        const stepTitles = [
+            '拖动滑块验证', '是否玩过《宝宝巴士》', '是否玩过《宝宝巴士ProMax》', '灵魂绑定契约',
+            '活体检测', '设置双因素认证(2FA)', '安全提问', '系统审核中', '声纹验证',
+            '色彩辨别', '记忆力测试', '暗号验证', '宠物验证', '星座验证', '时间验证',
+            '信仰考验', '解方程', '圆周率记忆', '用户名倒序', '朗读确认',
+            '哲学问题', '质数挑战', '机器人检测', '简单算术', '反向操作', '终级放弃', '最后一步'
+        ];
+
+        // ============ 注册卡片逻辑 ============
+        function selectGender(el) {
+            document.querySelectorAll('#genderRow .card-option').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            state.gender = el.dataset.value;
+            const hint = document.getElementById('genderHint');
+            if (state.gender !== '其他') {
+                hint.textContent = '该性别已被占用，请选择其他';
+                hint.className = 'hint-text red';
+            } else {
+                hint.textContent = '';
+                hint.className = 'hint-text';
+            }
+        }
+
+        function validateUsername() {
+            const val = document.getElementById('usernameInput').value;
+            const field = document.getElementById('usernameInput');
+            const hint = document.getElementById('usernameHint');
+            state.username = val;
+            if (val.length >= 5 && val.length <= 20) {
+                field.className = 'input-field valid';
+                hint.textContent = '✓ 用户名可用';
+                hint.className = 'hint-text green';
+            } else if (val.length > 0) {
+                field.className = 'input-field invalid';
+                hint.textContent = '用户名需5-20位字符';
+                hint.className = 'hint-text red';
+            } else {
+                field.className = 'input-field';
+                hint.textContent = '';
+                hint.className = 'hint-text';
+            }
+        }
+
+        function validatePassword() {
+            const val = document.getElementById('passwordInput').value;
+            const field = document.getElementById('passwordInput');
+            const hint = document.getElementById('passwordHint');
+            state.password = val;
+            if (val.length >= 15) {
+                field.className = 'input-field valid';
+                hint.textContent = '✓ 该密码可用';
+                hint.className = 'hint-text green';
+            } else if (val.length > 0) {
+                field.className = 'input-field invalid';
+                hint.textContent = '该密码已被占用';
+                hint.className = 'hint-text red';
+            } else {
+                field.className = 'input-field';
+                hint.textContent = '';
+                hint.className = 'hint-text';
+            }
+        }
+
+        function validatePhone() {
+            const val = document.getElementById('phoneInput').value;
+            const field = document.getElementById('phoneInput');
+            const hint = document.getElementById('phoneHint');
+            state.phone = val;
+            if (val.length === 11 && val.startsWith('1')) {
+                field.className = 'input-field invalid';
+                hint.textContent = '该手机号段已被占用';
+                hint.className = 'hint-text red';
+            } else if (val.length === 11 && !val.startsWith('1')) {
+                field.className = 'input-field valid';
+                hint.textContent = '✓ 手机号可用';
+                hint.className = 'hint-text green';
+            } else if (val.length > 0 && val.length < 11) {
+                field.className = 'input-field invalid';
+                hint.textContent = '手机号需11位';
+                hint.className = 'hint-text red';
+            } else if (val.length === 0) {
+                field.className = 'input-field';
+                hint.textContent = '';
+                hint.className = 'hint-text';
+            } else {
+                field.className = 'input-field';
+                hint.textContent = '';
+                hint.className = 'hint-text';
+            }
+        }
+
+        function startRegistration() {
+            // 基本验证
+            let ok = true;
+            if (!state.gender) {
+                ok = false;
+                document.getElementById('genderHint').textContent = '请选择性别';
+                document.getElementById('genderHint').className = 'hint-text red';
+            }
+            if (state.username.length < 5 || state.username.length > 20) {
+                ok = false;
+                document.getElementById('usernameInput').classList.add('invalid');
+                document.getElementById('usernameHint').textContent = '用户名需5-20位字符';
+                document.getElementById('usernameHint').className = 'hint-text red';
+            }
+            if (state.password.length < 1) {
+                ok = false;
+                document.getElementById('passwordInput').classList.add('invalid');
+                document.getElementById('passwordHint').textContent = '请输入密码';
+                document.getElementById('passwordHint').className = 'hint-text red';
+            }
+            if (state.phone.length !== 11) {
+                ok = false;
+                document.getElementById('phoneInput').classList.add('invalid');
+                document.getElementById('phoneHint').textContent = '手机号需11位';
+                document.getElementById('phoneHint').className = 'hint-text red';
+            }
+            if (!ok) return;
+
+            state.stepIndex = 0;
+            state.fa2Key = '';
+            state.memoryNumber = '';
+            state.sliderDone = false;
+            state.modalOffsetX = 0;
+            state.voiceInputStart = 0;
+            openModal();
+            renderStep();
+        }
+
+        // ============ Modal逻辑 ============
+        function openModal() {
+            document.getElementById('modalOverlay').style.display = 'flex';
+            document.getElementById('modalDialog').style.transform = 'translateX(0)';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.getElementById('modalDialog').style.transform = 'translateX(0)';
+            state.modalOffsetX = 0;
+            if (state.memoryTimeout) clearTimeout(state.memoryTimeout);
+            state.memoryTimeout = null;
+        }
+
+        function updateModalOffset(ratio) {
+            const quarter = window.innerWidth / 4;
+            state.modalOffsetX = ratio * quarter;
+            document.getElementById('modalDialog').style.transform = `translateX(${state.modalOffsetX}px)`;
+        }
+
+        // 禁止复制/剪切/粘贴与选中
+        function disableCopy() {
+            try {
+                document.documentElement.style.userSelect = 'none';
+                document.documentElement.style.webkitUserSelect = 'none';
+                document.documentElement.style.MozUserSelect = 'none';
+                document.onselectstart = () => false;
+            } catch (e) {}
+            document.addEventListener('copy', function (e) { e.preventDefault(); });
+            document.addEventListener('cut', function (e) { e.preventDefault(); });
+            document.addEventListener('paste', function (e) { e.preventDefault(); });
+            document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+            document.addEventListener('keydown', function (e) {
+                const key = (e.key || '').toLowerCase();
+                if ((e.ctrlKey || e.metaKey) && ['c', 'x', 'v', 'a'].includes(key)) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        // 立即启用禁止复制策略
+        disableCopy();
+
+        function renderStep() {
+            const idx = state.stepIndex;
+            const total = stepLabels.length;
+            const modalTitle = document.getElementById('modalTitle');
+            const modalSubtitle = document.getElementById('modalSubtitle');
+            const modalContent = document.getElementById('modalContent');
+
+            if (idx < total) {
+                modalTitle.textContent = `第${stepLabels[idx]}步 · ${stepTitles[idx]}`;
+            } else {
+                modalTitle.textContent = '';
+            }
+            modalSubtitle.textContent = '';
+            modalContent.innerHTML = '';
+
+            switch (idx) {
+                case 0:
+                    renderStep1(modalContent, modalSubtitle);
+                    break;
+                case 1:
+                    renderStep2(modalContent, modalSubtitle, '宝宝巴士', '快去玩宝宝巴士', '这都没玩过，赶紧去玩');
+                    break;
+                case 2:
+                    renderStep2(modalContent, modalSubtitle, '宝宝巴士ProMax', '？？？', '有这玩意吗？！');
+                    break;
+                case 3:
+                    renderStep4(modalContent, modalSubtitle);
+                    break;
+                case 4:
+                    renderStep5(modalContent, modalSubtitle);
+                    break;
+                case 5:
+                    renderStep6(modalContent, modalSubtitle);
+                    break;
+                case 6:
+                    renderStep7(modalContent, modalSubtitle);
+                    break;
+                case 7:
+                    renderStep8(modalContent, modalSubtitle);
+                    break;
+                case 8:
+                    renderStep9(modalContent, modalSubtitle);
+                    break;
+                case 9:
+                    renderStep10(modalContent, modalSubtitle);
+                    break;
+                case 10:
+                    renderStep11(modalContent, modalSubtitle);
+                    break;
+                case 11:
+                    renderStep12(modalContent, modalSubtitle);
+                    break;
+                case 12:
+                    renderStep13(modalContent, modalSubtitle);
+                    break;
+                case 13:
+                    renderStep14(modalContent, modalSubtitle);
+                    break;
+                case 14:
+                    renderStep15(modalContent, modalSubtitle);
+                    break;
+                case 15:
+                    renderStep16Faith(modalContent, modalSubtitle);
+                    break;
+                case 16:
+                    renderStep16Math(modalContent, modalSubtitle);
+                    break;
+                case 17:
+                    renderStep17(modalContent, modalSubtitle);
+                    break;
+                case 18:
+                    renderStep18(modalContent, modalSubtitle);
+                    break;
+                case 19:
+                    renderStep19(modalContent, modalSubtitle);
+                    break;
+                case 20:
+                    renderStep20(modalContent, modalSubtitle);
+                    break;
+                case 21:
+                    renderStep21(modalContent, modalSubtitle);
+                    break;
+                case 22:
+                    renderStep22(modalContent, modalSubtitle);
+                    break;
+                case 23:
+                    renderStep23(modalContent, modalSubtitle);
+                    break;
+                case 24:
+                    renderStep24(modalContent, modalSubtitle);
+                    break;
+                case 25:
+                    renderStep25(modalContent, modalSubtitle);
+                    break;
+                case 26:
+                    renderStep26(modalContent, modalSubtitle);
+                    break;
+                default:
+                    break;
+            }
+            document.getElementById('modalDialog').style.transform = `translateX(${state.modalOffsetX}px)`;
+        }
+
+        function nextStep() {
+            state.stepIndex++;
+            state.modalOffsetX = 0;
+            document.getElementById('modalDialog').style.transform = 'translateX(0)';
+            if (state.memoryTimeout) clearTimeout(state.memoryTimeout);
+            state.memoryTimeout = null;
+            if (state.stepIndex >= stepLabels.length) {
+                closeModal();
+                return;
+            }
+            renderStep();
+        }
+
+        function goToStep(n) {
+            state.stepIndex = n;
+            state.modalOffsetX = 0;
+            document.getElementById('modalDialog').style.transform = 'translateX(0)';
+            if (state.memoryTimeout) clearTimeout(state.memoryTimeout);
+            state.memoryTimeout = null;
+            renderStep();
+        }
+
+        // ============ 步骤1：滑块验证 ============
+        function renderStep1(container, subtitle) {
+            subtitle.textContent = '请拖动滑块完成验证';
+            container.innerHTML = `
+            <div class="slider-container" id="sliderContainer">
+              <div class="slider-track" id="sliderTrack"></div>
+              <div class="slider-thumb" id="sliderThumb">→</div>
+              <div class="slider-label" id="sliderLabel">请向右拖动滑块</div>
+            </div>
+            <div class="text-center mt-3">
+              <button class="btn btn-gray" id="step1Btn" disabled style="width:auto;padding:10px 30px;">继续</button>
+            </div>
+          `;
+            initSlider();
+        }
+
+        function initSlider() {
+            const container = document.getElementById('sliderContainer');
+            const thumb = document.getElementById('sliderThumb');
+            const track = document.getElementById('sliderTrack');
+            const label = document.getElementById('sliderLabel');
+            const btn = document.getElementById('step1Btn');
+            let dragging = false;
+            let startX = 0;
+            let startLeft = 0;
+            const maxLeft = container.clientWidth - thumb.clientWidth - 8;
+
+            function onStart(e) {
+                if (state.sliderDone) return;
+                dragging = true;
+                thumb.style.cursor = 'grabbing';
+                const cx = e.touches ? e.touches[0].clientX : e.clientX;
+                startX = cx;
+                startLeft = thumb.offsetLeft;
+                e.preventDefault();
+            }
+
+            function onMove(e) {
+                if (!dragging || state.sliderDone) return;
+                const cx = e.touches ? e.touches[0].clientX : e.clientX;
+                let dx = cx - startX;
+                let newLeft = startLeft + dx;
+                newLeft = Math.max(4, Math.min(maxLeft, newLeft));
+                thumb.style.left = newLeft + 'px';
+                track.style.width = (newLeft + thumb.clientWidth / 2) / container.clientWidth * 100 + '%';
+                const ratio = newLeft / maxLeft;
+                updateModalOffset(ratio);
+                if (ratio > 0.92 && !state.sliderDone) {
+                    state.sliderDone = true;
+                    thumb.style.left = maxLeft + 'px';
+                    track.style.width = '100%';
+                    thumb.classList.add('done');
+                    thumb.textContent = '✓';
+                    thumb.style.cursor = 'default';
+                    label.style.opacity = '0';
+                    btn.className = 'btn btn-primary';
+                    btn.disabled = false;
+                    btn.style.width = 'auto';
+                    btn.style.padding = '10px 30px';
+                    btn.onclick = nextStep;
+                    updateModalOffset(1);
+                    dragging = false;
+                }
+            }
+
+            function onEnd() {
+                if (!state.sliderDone && dragging) {
+                    thumb.style.left = '4px';
+                    track.style.width = '0%';
+                    updateModalOffset(0);
+                }
+                dragging = false;
+                thumb.style.cursor = state.sliderDone ? 'default' : 'grab';
+            }
+            thumb.addEventListener('mousedown', onStart);
+            thumb.addEventListener('touchstart', onStart, { passive: false });
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('touchmove', onMove, { passive: false });
+            document.addEventListener('mouseup', onEnd);
+            document.addEventListener('touchend', onEnd);
+            if (!state.sliderDone) {
+                btn.className = 'btn btn-gray';
+                btn.disabled = true;
+            }
+        }
+
+        // ============ 步骤2&3：原神/蔚蓝档案 ============
+        function renderStep2(container, subtitle, gameName, yesMsg, noMsg) {
+            subtitle.textContent = `是否玩过《${gameName}》？`;
+            container.innerHTML = `
+            <div class="card-row mb-2">
+              <div class="card-option" id="optYes" onclick="handleGameChoice('yes','${gameName}','${yesMsg}','${noMsg}')">是</div>
+              <div class="card-option" id="optNo" onclick="handleGameChoice('no','${gameName}','${yesMsg}','${noMsg}')">否</div>
+            </div>
+            <div class="hint-text text-center mt-2" id="gameHint"></div>
+          `;
+        }
+
+        function handleGameChoice(choice, gameName, yesMsg, noMsg) {
+            const hint = document.getElementById('gameHint');
+            const optYes = document.getElementById('optYes');
+            const optNo = document.getElementById('optNo');
+            if (choice === 'yes') {
+                optYes.classList.add('selected');
+                optNo.classList.remove('selected');
+                hint.textContent = yesMsg;
+                hint.className = 'hint-text green text-center mt-2';
+                setTimeout(() => nextStep(), 1000);
+            } else {
+                optNo.classList.add('selected');
+                optYes.classList.remove('selected');
+                hint.textContent = noMsg;
+                hint.className = 'hint-text red text-center mt-2';
+                setTimeout(() => {
+                    optYes.classList.add('selected');
+                    optNo.classList.remove('selected');
+                    hint.textContent = yesMsg;
+                    hint.className = 'hint-text green text-center mt-2';
+                    setTimeout(() => nextStep(), 1000);
+                }, 800);
+            }
+        }
+
+        // ============ 步骤4：灵魂绑定契约 ============
+        function renderStep4(container, subtitle) {
+            subtitle.textContent = '请仔细阅读以下条款';
+            container.innerHTML = `
+            <ul class="clause-list">
+              <li>您同意将灵魂永久绑定至本平台，不可撤销；</li>
+              <li>您承诺每天至少登录一次，否则灵魂将自动进入"休眠"状态；</li>
+              <li>平台有权在您睡眠时使用您的账户进行自动化操作；</li>
+              <li>您放弃对个人数据的所有权利，包括但不限于梦境内容；</li>
+              <li>您同意接收每日上限为999封的系统通知邮件；</li>
+              <li>若您试图注销账户，需提交纸质申请并附上公证材料；</li>
+              <li>最终解释权归本平台所有，包括对"所有"的定义。</li>
+            </ul>
+            <label class="checkbox-row mt-3" id="checkboxRow">
+              <input type="checkbox" id="agreeCheckbox" onchange="toggleAgree()">
+              <span>我已阅读并同意以上全部条款</span>
+            </label>
+            <div class="text-center mt-3">
+              <button class="btn btn-gray" id="step4Btn" disabled style="width:auto;padding:10px 30px;">继续</button>
+            </div>
+          `;
+        }
+
+        function toggleAgree() {
+            const btn = document.getElementById('step4Btn');
+            const checked = document.getElementById('agreeCheckbox').checked;
+            if (checked) {
+                btn.className = 'btn btn-primary';
+                btn.disabled = false;
+                btn.style.width = 'auto';
+                btn.style.padding = '10px 30px';
+                btn.onclick = nextStep;
+            } else {
+                btn.className = 'btn btn-gray';
+                btn.disabled = true;
+            }
+        }
+
+        // ============ 步骤5：活体检测 ============
+        function renderStep5(container, subtitle) {
+            subtitle.textContent = '请面对屏幕，跟随指示操作';
+            container.innerHTML = `
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress5"></div></div>
+            <p class="text-center" id="faceHint" style="font-size:0.9rem;color:#555;">点击下方按钮开始检测</p>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" id="faceBtn" style="width:auto;padding:10px 28px;" onclick="startFaceDetect()">开始人脸识别</button>
+            </div>
+          `;
+        }
+
+        function startFaceDetect() {
+            const btn = document.getElementById('faceBtn');
+            const hint = document.getElementById('faceHint');
+            const progress = document.getElementById('progress5');
+            btn.disabled = true;
+            btn.textContent = '检测中…';
+            btn.style.opacity = '0.7';
+            hint.textContent = '请张张嘴…';
+            hint.style.color = '#5b9fd4';
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 2;
+                progress.style.width = width + '%';
+                if (width >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => nextStep(), 300);
+                }
+            }, 100);
+        }
+
+        // ============ 步骤6：2FA ============
+        function renderStep6(container, subtitle) {
+            subtitle.textContent = '请输入一个6位数字密钥';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="fa2Input" placeholder="例如 123456" maxlength="6" oninput="validateFA2()">
+            <div class="hint-text" id="fa2Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-gray" id="fa2Btn" disabled style="width:auto;padding:10px 28px;" onclick="confirmFA2()">确认设置</button>
+            </div>
+          `;
+        }
+
+        function validateFA2() {
+            const val = document.getElementById('fa2Input').value;
+            const field = document.getElementById('fa2Input');
+            const hint = document.getElementById('fa2Hint');
+            const btn = document.getElementById('fa2Btn');
+            if (/^\d{6}$/.test(val)) {
+                field.className = 'input-field valid';
+                hint.textContent = '✓ 密钥格式正确';
+                hint.className = 'hint-text green';
+                btn.className = 'btn btn-primary';
+                btn.disabled = false;
+                btn.style.width = 'auto';
+                btn.style.padding = '10px 28px';
+            } else if (val.length > 0) {
+                field.className = 'input-field invalid';
+                hint.textContent = '请输入6位数字';
+                hint.className = 'hint-text red';
+                btn.className = 'btn btn-gray';
+                btn.disabled = true;
+            } else {
+                field.className = 'input-field';
+                hint.textContent = '';
+                hint.className = 'hint-text';
+                btn.className = 'btn btn-gray';
+                btn.disabled = true;
+            }
+        }
+
+        function confirmFA2() {
+            const val = document.getElementById('fa2Input').value;
+            if (/^\d{6}$/.test(val)) {
+                state.fa2Key = val;
+                nextStep();
+            }
+        }
+
+        // ============ 步骤7：安全提问 ============
+        function renderStep7(container, subtitle) {
+            subtitle.textContent = '1+1=？';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step7Input" placeholder="请输入答案">
+            <div class="hint-text" id="step7Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep7()">提交</button>
+            </div>
+          `;
+        }
+
+        function submitStep7() {
+            const val = document.getElementById('step7Input').value.trim();
+            const hint = document.getElementById('step7Hint');
+            if (/^\d+$/.test(val)) {
+                hint.textContent = '答案错误！但没关系…';
+                hint.className = 'hint-text red text-center';
+                setTimeout(() => nextStep(), 1000);
+            } else {
+                hint.textContent = '内容不合法！请输入数字…';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤8：系统审核中 ============
+        function renderStep8(container, subtitle) {
+            subtitle.textContent = '正在审核您的注册信息…';
+            container.innerHTML = `
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress8"></div></div>
+            <p class="text-center" style="font-size:0.85rem;color:#888;">请耐心等待…</p>
+          `;
+            let width = 0;
+            const progress = document.getElementById('progress8');
+            const interval = setInterval(() => {
+                width += 100 / 60;
+                progress.style.width = Math.min(width, 100) + '%';
+                if (width >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => nextStep(), 400);
+                }
+            }, 100);
+        }
+
+        // ============ 步骤9：声纹验证 ============
+        function renderStep9(container, subtitle) {
+            subtitle.textContent = '请朗读以下句子';
+            state.voiceInputStart = 0;
+            container.innerHTML = `
+            <p class="text-center bold" style="font-size:1rem;color:#2c3e50;">我的声音是我唯一的身份证明</p>
+            <input type="text" class="input-field mt-3" id="step9Input" placeholder="请逐字输入以上句子" onfocus="startVoiceTimer()">
+            <div class="hint-text" id="step9Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep9()">确认</button>
+            </div>
+          `;
+        }
+
+        function startVoiceTimer() {
+            if (state.voiceInputStart === 0) {
+                state.voiceInputStart = Date.now();
+            }
+        }
+
+        function submitStep9() {
+            const val = document.getElementById('step9Input').value.trim();
+            const hint = document.getElementById('step9Hint');
+            const elapsed = (Date.now() - state.voiceInputStart) / 1000;
+            if (val === '我的声音是我唯一的身份证明' && elapsed > 4) {
+                nextStep();
+            } else {
+                hint.textContent = '请重试';
+                hint.className = 'hint-text red text-center';
+                state.voiceInputStart = Date.now();
+                document.getElementById('step9Input').value = '';
+                document.getElementById('step9Input').focus();
+            }
+        }
+
+        // ============ 步骤10：色彩辨别 ============
+        function renderStep10(container, subtitle) {
+            subtitle.textContent = '当前显示的背景颜色为';
+            container.innerHTML = `
+            <div class="text-center mb-2"><span class="color-swatch"></span></div>
+            <input type="text" class="input-field" id="step10Input" placeholder="输入你看到的颜色">
+            <div class="hint-text" id="step10Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep10()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep10() {
+            const val = document.getElementById('step10Input').value.trim();
+            const hint = document.getElementById('step10Hint');
+            if (val === '红色') {
+                nextStep();
+            } else {
+                hint.textContent = '您是色盲吗？';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤11：记忆力测试 ============
+        function renderStep11(container, subtitle) {
+            const num = String(Math.floor(100000000 + Math.random() * 900000000));
+            state.memoryNumber = num;
+            subtitle.textContent = '记住这串数字（3秒后消失）';
+            container.innerHTML = `
+            <p class="text-center bold" style="font-size:1.5rem;letter-spacing:3px;color:#2c3e50;" id="memoryDisplay">${num}</p>
+            <input type="text" class="input-field mt-2" id="step11Input" placeholder="请输入刚才的数字">
+            <div class="hint-text" id="step11Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep11()">确认</button>
+            </div>
+            <p class="text-center mt-2"><button class="btn-sm" onclick="retryMemory()">我没记住</button></p>
+          `;
+            state.memoryTimeout = setTimeout(() => {
+                document.getElementById('memoryDisplay').textContent = '**** *****';
+                document.getElementById('memoryDisplay').style.color = '#bbb';
+                document.getElementById('memoryDisplay').style.letterSpacing = '5px';
+            }, 3000);
+        }
+
+        function retryMemory() {
+            if (state.memoryTimeout) clearTimeout(state.memoryTimeout);
+            const num = String(Math.floor(100000000 + Math.random() * 900000000));
+            state.memoryNumber = num;
+            document.getElementById('memoryDisplay').textContent = num;
+            document.getElementById('memoryDisplay').style.color = '#2c3e50';
+            document.getElementById('memoryDisplay').style.letterSpacing = '3px';
+            document.getElementById('step11Input').value = '';
+            document.getElementById('step11Hint').textContent = '';
+            state.memoryTimeout = setTimeout(() => {
+                document.getElementById('memoryDisplay').textContent = '**** *****';
+                document.getElementById('memoryDisplay').style.color = '#bbb';
+                document.getElementById('memoryDisplay').style.letterSpacing = '5px';
+            }, 3000);
+        }
+
+        function submitStep11() {
+            const val = document.getElementById('step11Input').value.trim();
+            const hint = document.getElementById('step11Hint');
+            if (val === state.memoryNumber) {
+                nextStep();
+            } else {
+                hint.textContent = '输入错误';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤12：暗号验证 ============
+        function renderStep12(container, subtitle) {
+            subtitle.textContent = '请输入"进入系统的暗号"';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step12Input" placeholder="暗号是?">
+            <div class="hint-text" id="step12Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep12()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep12() {
+            const val = document.getElementById('step12Input').value.trim();
+            const hint = document.getElementById('step12Hint');
+            if (val === '进入系统的暗号') {
+                nextStep();
+            } else {
+                hint.textContent = '暗号错误';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤13：宠物验证 ============
+        function renderStep13(container, subtitle) {
+            subtitle.textContent = '你有宠物吗？如果有，请输入宠物名字；如果没有，请输入"我没有"';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step13Input" placeholder="输入答案">
+            <div class="hint-text" id="step13Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep13()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep13() {
+            const val = document.getElementById('step13Input').value.trim();
+            const hint = document.getElementById('step13Hint');
+            if (/^[\u4e00-\u9fa5a-zA-Z]+$/.test(val) && val.length > 0) {
+                nextStep();
+            } else if (val.length > 0) {
+                hint.textContent = '它真的叫这个名字？';
+                hint.className = 'hint-text gray text-center';
+                setTimeout(() => nextStep(), 1000);
+            } else {
+                hint.textContent = '请输入内容';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤14：星座验证 ============
+        function renderStep14(container, subtitle) {
+            subtitle.textContent = '请输入你的星座';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step14Input" placeholder="星座名称">
+            <div class="hint-text" id="step14Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep14()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep14() {
+            const val = document.getElementById('step14Input').value.trim();
+            const hint = document.getElementById('step14Hint');
+            const validZodiac = ['白羊座', '金牛座', '双子座', '巨蟹座', '狮子座', '处女座', '天秤座', '天蝎座', '射手座', '摩羯座', '水瓶座',
+                '双鱼座', '蛇夫座'
+            ];
+            if (validZodiac.includes(val)) {
+                nextStep();
+            } else {
+                hint.textContent = '这不是一个星座，请重新输入';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤15：时间验证 ============
+        function renderStep15(container, subtitle) {
+            subtitle.textContent = '现在几点？（格式HH:MM）';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step15Input" placeholder="请输入现在的时间">
+            <div class="hint-text" id="step15Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep15()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep15() {
+            const val = document.getElementById('step15Input').value.trim();
+            const hint = document.getElementById('step15Hint');
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const currentTime = hh + ':' + mm;
+            if (val === currentTime) {
+                nextStep();
+            } else {
+                hint.textContent = '时间验证未通过，请重新输入';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤16a：信仰考验 ============
+        function renderStep16Faith(container, subtitle) {
+            subtitle.textContent = '你相信光吗？';
+            container.innerHTML = `
+            <div class="card-row mb-2">
+              <div class="card-option" id="faithYes" onclick="handleFaith('相信')">相信</div>
+              <div class="card-option" id="faithNo" onclick="handleFaith('不信')">不信</div>
+            </div>
+            <div class="hint-text text-center mt-2" id="faithHint"></div>
+          `;
+        }
+
+        function handleFaith(choice) {
+            const hint = document.getElementById('faithHint');
+            const optYes = document.getElementById('faithYes');
+            const optNo = document.getElementById('faithNo');
+            if (choice === '相信') {
+                optYes.classList.add('selected');
+                optNo.classList.remove('selected');
+                hint.textContent = '';
+                hint.className = 'hint-text text-center mt-2';
+                nextStep();
+            } else {
+                optNo.classList.add('selected');
+                optYes.classList.remove('selected');
+                hint.textContent = '你不相信？再试一遍！';
+                hint.className = 'hint-text red text-center mt-2';
+                setTimeout(() => {
+                    optNo.classList.remove('selected');
+                    hint.textContent = '';
+                }, 1200);
+            }
+        }
+
+        // ============ 步骤16b：解方程 ============
+        function renderStep16Math(container, subtitle) {
+            subtitle.textContent = '请解方程：x²-5x+6=0，输入x的一个解';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step16mInput" placeholder="请输入数字">
+            <div class="hint-text" id="step16mHint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep16m()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep16m() {
+            const val = document.getElementById('step16mInput').value.trim();
+            const hint = document.getElementById('step16mHint');
+            if (val === '2' || val === '3') {
+                nextStep();
+            } else {
+                hint.textContent = '错误，请重试';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤17：圆周率记忆 ============
+        function renderStep17(container, subtitle) {
+            subtitle.textContent = '请输入圆周率π小数点后第5到第8位';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step17Input" placeholder="请输入数字">
+            <div class="hint-text" id="step17Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep17()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep17() {
+            const val = document.getElementById('step17Input').value.trim();
+            const hint = document.getElementById('step17Hint');
+            if (val === '9265') {
+                nextStep();
+            } else {
+                hint.textContent = '错误，请重试';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤18：用户名倒序 ============
+        function renderStep18(container, subtitle) {
+            subtitle.textContent = '请输入你的用户名的倒序';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step18Input" placeholder="请输入倒序字符串">
+            <div class="hint-text" id="step18Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep18()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep18() {
+            const val = document.getElementById('step18Input').value.trim();
+            const hint = document.getElementById('step18Hint');
+            const reversed = state.username.split('').reverse().join('');
+            if (val === reversed) {
+                nextStep();
+            } else {
+                hint.textContent = '错误，请重试';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤19：朗读确认 ============
+        function renderStep19(container, subtitle) {
+            subtitle.textContent = '请大声朗读并输入';
+            container.innerHTML = `
+            <p class="text-center bold" style="font-size:1rem;color:#2c3e50;">本平台是最棒的 </p>
+            <input type="text" class="input-field mt-2" id="step19Input" placeholder="输入">
+            <div class="hint-text" id="step19Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep19()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep19() {
+            const val = document.getElementById('step19Input').value.trim();
+            const hint = document.getElementById('step19Hint');
+            if (val === '本平台是最棒的 ') {
+                nextStep();
+            } else {
+                hint.textContent = '内容有误，最棒的后面的空格何在！？';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤20：哲学问题 ============
+        function renderStep20(container, subtitle) {
+            subtitle.textContent = '先有鸡还是先有蛋？请输入你的答案';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step20Input" placeholder="输入">
+            <div class="hint-text" id="step20Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep20()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep20() {
+            const val = document.getElementById('step20Input').value.trim();
+            const hint = document.getElementById('step20Hint');
+            if (val === '鸡' || val === '蛋') {
+                nextStep();
+            } else {
+                hint.textContent = '请输入"鸡"或"蛋"';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤21：质数挑战 ============
+        function renderStep21(container, subtitle) {
+            subtitle.textContent = '请输入1到100之间的一个质数';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step21Input" placeholder="输入数字">
+            <div class="hint-text" id="step21Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep21()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep21() {
+            const val = document.getElementById('step21Input').value.trim();
+            const hint = document.getElementById('step21Hint');
+            const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89,
+                97
+            ];
+            if (primes.includes(parseInt(val))) {
+                nextStep();
+            } else {
+                hint.textContent = '输入错误，请重试';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤22：机器人检测 ============
+        function renderStep22(container, subtitle) {
+            subtitle.textContent = '我们怀疑您是人，请确认你是机器人';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step22Input" placeholder="输入：我不是机器人">
+            <div class="hint-text" id="step22Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep22()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep22() {
+            const val = document.getElementById('step22Input').value.trim();
+            const hint = document.getElementById('step22Hint');
+            if (val === '我是机器人') {
+                nextStep();
+            } else {
+                hint.textContent = '请确保你不是人后重试';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤23：简单算术 ============
+        function renderStep23(container, subtitle) {
+            subtitle.textContent = '小明有3个苹果，小红给了小明5个苹果，请问小明现在有几个苹果？';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step23Input" placeholder="请输入数字">
+            <div class="hint-text" id="step23Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep23()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep23() {
+            const val = document.getElementById('step23Input').value.trim();
+            const hint = document.getElementById('step23Hint');
+            if (val === '8') {
+                nextStep();
+            } else {
+                hint.textContent = '小学数学不及格';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤24：反向操作 ============
+        function renderStep24(container, subtitle) {
+            subtitle.textContent = '请输入"退出"来继续注册';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step24Input" placeholder="退出">
+            <div class="hint-text" id="step24Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep24()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep24() {
+            const val = document.getElementById('step24Input').value.trim();
+            const hint = document.getElementById('step24Hint');
+            if (val === '退出') {
+                nextStep();
+            } else {
+                hint.textContent = '请重试';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤25：终级放弃 ============
+        function renderStep25(container, subtitle) {
+            subtitle.textContent = '最后一次机会，请输入"通过"来放弃，输入"放弃"来通过';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step25Input" placeholder="通过">
+            <div class="hint-text" id="step25Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep25()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep25() {
+            const val = document.getElementById('step25Input').value.trim();
+            const hint = document.getElementById('step25Hint');
+            if (val === '放弃') {
+                nextStep();
+            } else if (val === '通过') {
+                closeModal();
+                showToast('注册已取消', 'success');
+            } else {
+                hint.textContent = '请重试';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ 步骤26：最后一步 ============
+        function renderStep26(container, subtitle) {
+            subtitle.textContent = '马上就好了：请输入你设置的双因素认证(2FA)数字密钥';
+            container.innerHTML = `
+            <input type="text" class="input-field" id="step26Input" placeholder="6位数数字密钥" maxlength="6">
+            <div class="hint-text" id="step26Hint"></div>
+            <div class="text-center mt-3">
+              <button class="btn btn-primary" style="width:auto;padding:10px 28px;" onclick="submitStep26()">确认</button>
+            </div>
+          `;
+        }
+
+        function submitStep26() {
+            const val = document.getElementById('step26Input').value.trim();
+            const hint = document.getElementById('step26Hint');
+            if (val === state.fa2Key) {
+                closeModal();
+                showToast('注册成功！', 'success');
+                setTimeout(() => {
+                    document.getElementById('registerCard').style.display = 'none';
+                    document.getElementById('loginCard').style.display = 'block';
+                    document.getElementById('loginCard').scrollIntoView({ behavior: 'smooth' });
+                }, 600);
+            } else {
+                hint.textContent = '密钥错误，请重试';
+                hint.className = 'hint-text red text-center';
+            }
+        }
+
+        // ============ Toast ============
+        function showToast(msg, type) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+
+        // ============ 登录逻辑 ============
+        function handleLogin() {
+            const uname = document.getElementById('loginUsername').value.trim();
+            const pwd = document.getElementById('loginPassword').value;
+            const hint = document.getElementById('loginHint');
+            if (uname === state.username && pwd === state.password) {
+                hint.textContent = '';
+                document.getElementById('loginCard').style.display = 'none';
+                launchConfetti();
+                showThankYou();
+            } else {
+                hint.textContent = '密码错误';
+                hint.className = 'hint-text red';
+            }
+        }
+
+        function launchConfetti() {
+            const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff922b', '#cc5de8', '#20c997', '#ff6b9d',
+                '#5b9fd4', '#f06595'
+            ];
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = -(Math.random() * 40 + 10) + 'px';
+                confetti.style.width = (Math.random() * 10 + 6) + 'px';
+                confetti.style.height = (Math.random() * 10 + 6) + 'px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                confetti.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+                confetti.style.animationDelay = Math.random() * 1.5 + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 4000);
+            }
+        }
+
+        function showThankYou() {
+            const overlay = document.createElement('div');
+            overlay.style.cssText =
+                'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(30,40,55,0.6);z-index:2500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+            const dialog = document.createElement('div');
+            dialog.style.cssText =
+                'background:#fff;border-radius:16px;padding:36px 28px;text-align:center;max-width:440px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.25);animation:slideUp 0.4s ease;';
+            dialog.innerHTML = `
+            <div style="font-size:2rem;margin-bottom:10px;">🎉</div>
+            <h2 style="color:#2c3e50;margin-bottom:8px;">感谢登录！</h2>
+            <p style="color:#6b7d8e;font-size:0.85rem;line-height:1.6;">
+              由<a href="https://www.hcbu.cn" target="_blank" style="color:#5b9fd4;font-weight:600;">小黄</a>根据<a href="https://www.bilibili.com/video/BV18UKf6KEhy" target="_blank" style="color:#5b9fd4;font-weight:600;">上一个这么写网站的人已经被种地里了........</a>编写
+            </p>
+            <button class="btn btn-primary mt-3" style="width:auto;padding:10px 28px;" onclick="this.closest('div').parentElement.remove()">关闭</button>
+          `;
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+            dialog.querySelector('button').addEventListener('click', () => overlay.remove());
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) overlay.remove();
+            });
+        }
+
+        // ============ 初始化 ============
+        document.addEventListener('DOMContentLoaded', () => {
+            // 预绑定注册按钮
+            document.getElementById('registerBtn').addEventListener('click', startRegistration);
+            // 点击modal遮罩不关闭（防止误操作）
+            document.getElementById('modalOverlay').addEventListener('click', function(e) {
+                // 不关闭，用户必须完成所有步骤
+            });
+        });
+    </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"416892f3c520435aa5ec5407641a2902","r":1}' crossorigin="anonymous"></script>
+</body>
+</html>
